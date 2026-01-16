@@ -2,10 +2,11 @@
 
 import React from 'react'
 
-function Orders() {
+function Orders({toggle}) {
   return (
-    <div>
-      
+  <div className={`  md:left-[19%] top-10 absolute w-[60%] md:w-[80%] ` +(toggle ? 'left-10 top-[10%]' : 'left-[30%]')} >
+
+      <span>Orders</span>
     </div>
   )
 }

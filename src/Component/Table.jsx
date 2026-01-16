@@ -5,8 +5,10 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
+import { Button } from '@mui/material';
 
 import Checkbox from '@mui/material/Checkbox';
+import { useState } from 'react';
 
 const label = { slotProps: { input: { 'aria-label': 'Checkbox demo' } } };
 
@@ -23,8 +25,36 @@ const rows = [
 ];
 
 
+
+
 export default function BasicTable() {
+
+  const [Selectedrows,setSelectedRows] = useState([])
+const [checked,setChecked] = useState({})
+
+
+const handleCheckboxChange = (productName)=>{
+  setChecked((prev)=>({
+    ...prev,
+    [productName]: !prev[productName]
+  }))
+}
+
+console.log(checked)
+const handleDeleteChecked = ()=>{
+  const updatedRows = Selectedrows.filter((row)=>!checked[row.Products])
+  setSelectedRows(updatedRows)
+  setChecked({})
+}
+
+
+
+
   return (
+    <>
+    {Object.values(checked).some(c => c) && (
+  <Button onClick={handleDeleteChecked}>Delete Selected</Button>
+)}
     <TableContainer component={Paper}>
       <Table sx={{ minWidth: 650 }} aria-label="simple table">
         <TableHead>
@@ -44,7 +74,8 @@ export default function BasicTable() {
               sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
             >
               <TableCell component="th" scope="row">
-               <Checkbox {...label} /> {row.Products}
+               <Checkbox {...label}checked={checked[row.Products] || false}
+                onChange={() => handleCheckboxChange(row.Products)} /> {row.Products}
               </TableCell>
               
               <TableCell align="right">{row.Status}</TableCell>
@@ -56,5 +87,6 @@ export default function BasicTable() {
         </TableBody>
       </Table>
     </TableContainer>
+    </>
   );
 }
