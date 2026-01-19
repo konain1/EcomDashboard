@@ -38,6 +38,8 @@ export default function Sidebar () {
     setActive(path)
     dispatch(setSidebarItem(path))
   }
+
+  
   return (
     <div className=' bg-gray-500 text-white text-[8px] md:text-[22px]  w-[100px] md:w-64 min-h-screen md:p-5 '>
       <ul className='space-y-4'>

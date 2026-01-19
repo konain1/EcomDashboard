@@ -18,7 +18,7 @@ function Layout() {
   const selectedSidebarItem = useSelector(
     state => state.sidebar.selectedSidebarItem
   )
-console.log(selectedSidebarItem)
+
 
 const componentMap = {
   dashboard: Dashboard,
