@@ -131,7 +131,7 @@ function AddTabProduct() {
                   className='flex-1 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-semibold py-2 text-sm rounded-lg hover:shadow-lg transform hover:scale-105 transition'>
                   Save Product
                 </button>
-                <button className='flex-1 bg-gray-200 text-gray-800 font-semibold py-2 text-sm rounded-lg hover:bg-gray-300 transition'>
+                <button onClick={()=>setShowModal(false)} className='flex-1 bg-gray-200 text-gray-800 font-semibold py-2 text-sm rounded-lg hover:bg-gray-300 transition'>
                   Cancel
                 </button>
               </div>
@@ -175,10 +175,8 @@ function AddTabProduct() {
             </div>
           </div>
         </div>
-    
-     
       )}
-       </div>
+    </div>
   )
 }
 

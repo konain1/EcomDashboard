@@ -14,7 +14,7 @@ function SizeInput ({ sizes, onAddSize, onUpdateSize, onRemoveSize }) {
       </div>
 
       {sizes.map((size, index) => (
-        <div key={index} className='flex gap-2 items-center'>
+        <div key={index} className='md:flex grid-col-1 gap-2   items-center'>
           <select
             value={size}
             onChange={e => onUpdateSize(index, e.target.value)}
@@ -33,7 +33,7 @@ function SizeInput ({ sizes, onAddSize, onUpdateSize, onRemoveSize }) {
           {sizes.length > 1 && (
             <button
               onClick={() => onRemoveSize(index)}
-              className='bg-red-500 text-white px-2 py-1 rounded text-xs'
+              className='bg-red-500 text-white md:px-2 md:py-1 p-1 text-[8px] rounded '
             >
               Remove
             </button>
