@@ -44,7 +44,7 @@ function Tabs ({ toggle }) {
           <Buttons onClick={() => handleTab(tab)}>{tab.name}</Buttons>
         </div>
       ))}
-      {activeTab === 'Add' && show ? <AddTabProduct /> : ''}
+      {activeTab === 'Add' && show ? <AddTabProduct setShow={setShow} /> : ''}
     </div>
   )
 }

@@ -6,7 +6,7 @@ import ColorInput from './ColorInput'
 import SizeInput from './SizeInput'
 import UploadImage from './UploadImage'
 
-function AddTabProduct() {
+function AddTabProduct({setShow}) {
   const [colors, setColors] = useState([''])
   const [sizes, setSizes] = useState([''])
   const [productName, setProductName] = useState('')
@@ -47,6 +47,15 @@ function AddTabProduct() {
   const handleConfirmSave = () => {
     console.log({ productName, price, colors, sizes })
     setShowModal(false)
+    setProductName('')
+    setPrice('')
+    setColors([''])
+    setSizes([''])
+  }
+
+   const handleCancel = () => {
+    setShowModal(false)
+    setShow(false)
     setProductName('')
     setPrice('')
     setColors([''])
@@ -131,7 +140,7 @@ function AddTabProduct() {
                   className='flex-1 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-semibold py-2 text-sm rounded-lg hover:shadow-lg transform hover:scale-105 transition'>
                   Save Product
                 </button>
-                <button onClick={()=>setShowModal(false)} className='flex-1 bg-gray-200 text-gray-800 font-semibold py-2 text-sm rounded-lg hover:bg-gray-300 transition'>
+                <button onClick={handleCancel} className='flex-1 bg-gray-200 text-gray-800 font-semibold py-2 text-sm rounded-lg hover:bg-gray-300 transition'>
                   Cancel
                 </button>
               </div>
