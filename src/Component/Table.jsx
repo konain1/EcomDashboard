@@ -6,29 +6,28 @@ import TableHead from '@mui/material/TableHead'
 import TableRow from '@mui/material/TableRow'
 import Paper from '@mui/material/Paper'
 import { Button } from '@mui/material'
-
 import Checkbox from '@mui/material/Checkbox'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
+import { deleteProduct } from '../Redux/DataSlice'
+import EditProductModal from './EditProductModal'
 
 const label = { slotProps: { input: { 'aria-label': 'Checkbox demo' } } }
 
-function createData (id, Products, Status, Inventory, Stock, Grade) {
-  return { id, Products, Status, Inventory, Stock, Grade }
-}
-
-const rows = [
-  createData(1, 'Frozen yoghurt', 'Available', 159, 24, 4.0),
-  createData(2, 'Ice cream sandwich', 'Low', 237, 37, 4.3),
-  createData(3, 'Eclair', 'In Stock', 262, 24, 6.0),
-  createData(4, 'Cupcake', 'Available', 305, 67, 4.3),
-  createData(5, 'Gingerbread', 'Out of Stock', 356, 49, 3.9),
-  createData(6, 'Frozen yoghurt', 'Available', 159, 24, 4.0)
-]
-
-export default function BasicTable () {
-  const [Selectedrows, setSelectedRows] = useState(rows)
+export default function BasicTable() {
+  const dispatch = useDispatch()
+  const rows = useSelector(state => state.productData.data) 
   const [checked, setChecked] = useState({})
+  const [showEditModal, setShowEditModal] = useState(false)
+  const [editData, setEditData] = useState(null)
 
+
+    
+  console.log('Component rendered, rows:', rows)
+
+useEffect(()=>{
+console.log('useEffect')
+},[rows])
   const handleCheckboxChange = productId => {
     setChecked(prev => ({
       ...prev,
@@ -36,18 +35,64 @@ export default function BasicTable () {
     }))
   }
 
-  
   const handleDeleteChecked = () => {
-    const updatedRows = Selectedrows.filter(row => !checked[row.id])
-    setSelectedRows(updatedRows)
+    const idsToDelete = Object.keys(checked).filter(id => checked[id]).map(Number)
+    dispatch(deleteProduct(idsToDelete))
+    setChecked({})
+  }
+
+  const selectAll = () => {
+    const checkedAll = {}
+    rows.forEach(row => {
+      checkedAll[row.id] = true
+    })
+    setChecked(checkedAll)
+  }
+
+  const deselectAll = () => {
+    setChecked({})
+  }
+
+  const handleEdit = () => {
+    const selectedRows = rows.filter(row => checked[row.id])
+    console.log('selecteddata ',selectedRows)
+    if (selectedRows.length === 1) {
+      setEditData(selectedRows[0])
+      setShowEditModal(true)
+    } else if (selectedRows.length > 1) {
+      alert('Please select only one row to edit')
+    } else {
+      alert('Please select a row to edit')
+    }
+  }
+
+  const handleCloseModal = () => {
+    setShowEditModal(false)
+    setEditData(null)
+  }
+
+  const handleEditSuccess = () => {
+    setShowEditModal(false)
+    setEditData(null)
     setChecked({})
   }
 
   return (
     <>
+      <div style={{ marginBottom: '10px' }}>
+        <Button onClick={selectAll} variant="outlined">Select All</Button>
+        <Button onClick={deselectAll} variant="outlined" style={{ marginLeft: '10px' }}>
+          Deselect All
+        </Button>
+      </div>
+
       {Object.values(checked).some(c => c) && (
-        <Button onClick={handleDeleteChecked}>Delete Selected</Button>
+        <>
+          <Button onClick={handleDeleteChecked} color="error">Delete Selected</Button>
+          <Button onClick={handleEdit} color="primary">Edit</Button>
+        </>
       )}
+
       <TableContainer component={Paper}>
         <Table sx={{ minWidth: 650 }} aria-label='simple table'>
           <TableHead>
@@ -60,7 +105,7 @@ export default function BasicTable () {
             </TableRow>
           </TableHead>
           <TableBody>
-            {Selectedrows.map(row => (
+            {rows.map(row => (
               <TableRow
                 key={row.id}
                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
@@ -70,10 +115,9 @@ export default function BasicTable () {
                     {...label}
                     checked={checked[row.id] || false}
                     onChange={() => handleCheckboxChange(row.id)}
-                  />{' '}
+                  />
                   {row.Products}
                 </TableCell>
-
                 <TableCell align='right'>{row.Status}</TableCell>
                 <TableCell align='right'>{row.Inventory}</TableCell>
                 <TableCell align='right'>{row.Stock}</TableCell>
@@ -83,6 +127,14 @@ export default function BasicTable () {
           </TableBody>
         </Table>
       </TableContainer>
+
+      {showEditModal && editData && (
+        <EditProductModal 
+          editData={editData}
+          onClose={handleCloseModal}
+          onSuccess={handleEditSuccess}
+        />
+      )}
     </>
   )
 }
