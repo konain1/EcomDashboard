@@ -6,6 +6,9 @@ import Table from '../Component/Table'
 import { useSelector } from 'react-redux'
 import Container from '../Component/Container'
 
+import MenuIcon from '@mui/icons-material/Menu'
+import CloseIcon from '@mui/icons-material/Close'
+
 const Dashboard = lazy(() => import('../Screens/Dashboard'))
 const Products = lazy(() => import('../Screens/Products'))
 const Orders = lazy(() => import('../Screens/Orders'))
@@ -27,15 +30,17 @@ const componentMap = {
   users: Users,
 }
 
+
+
  const ActiveComponent = componentMap[selectedSidebarItem] || Dashboard
   return (
     <div className='text-3xl text-red-400 bg-white w-[100%] relative min-h-screen '>
    
         <div  className="md:hidden absolute  top-1 -translate-x-1/8 bg-gray-800 text-white px-3 text-sm py-1 rounded shadow
          transition-transform duration-300 ease-in-out"
-          style={{ transform: toggle ? 'translateX(10%)' : 'translateX(300%)' }}
+          style={{ transform: toggle ? 'translateX(10%)' : 'translateX(200%)' }}
         aria-label="Toggle sidebar">
-          <button className='relative' onClick={()=>setToggle(!toggle)}>{toggle ? "x" : "y"}</button>
+          <button className='relative' onClick={()=>setToggle(!toggle)}>  {toggle ? <CloseIcon /> : <MenuIcon />}</button>
         </div>
 
 {/* there are issues on ipad air , ipad mini and ipad pro all are different size side bar problem */}
