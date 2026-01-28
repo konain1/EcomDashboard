@@ -17,7 +17,7 @@ export default function EditProductModal({ editData, onClose, onSuccess }) {
   }
 
   const handleSaveEdit = (e) => {
-    console.log(formData)
+
     e.preventDefault()
     dispatch(editProduct({
       id: formData.id,

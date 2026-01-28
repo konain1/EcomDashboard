@@ -55,7 +55,8 @@ console.log('useEffect')
 
   const handleEdit = () => {
     const selectedRows = rows.filter(row => checked[row.id])
-    console.log('selecteddata ',selectedRows)
+  
+    
     if (selectedRows.length === 1) {
       setEditData(selectedRows[0])
       setShowEditModal(true)

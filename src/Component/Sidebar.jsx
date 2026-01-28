@@ -41,7 +41,7 @@ export default function Sidebar () {
 
   
   return (
-    <div className=' bg-gray-500 text-white text-[8px] md:text-[22px]  w-[100px] md:w-64 min-h-screen md:p-5 '>
+    <div className=' bg-gray-500 z-50 text-white text-[8px] md:text-[22px]  w-[100px] md:w-64 min-h-screen md:p-5 '>
       <ul className='space-y-4'>
         {menuItems.map(item => (
           <li

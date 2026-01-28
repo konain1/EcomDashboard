@@ -1,12 +1,18 @@
 
 
 import React from 'react'
+import AddProductModal from '../Component/AddProductModal'
 
 function Orders({toggle}) {
   return (
-  <div className={`  md:left-[19%] top-10 absolute w-[60%] md:w-[80%] ` +(toggle ? 'left-10 top-[10%]' : 'left-[30%]')} >
-
+  
+<div className={`right-[0px] bg-red-600 w-[60%]`+(toggle ? 'left-10 top-[10%]' : 'left-[30%]')}>
       <span>Orders</span>
+      <div className=''>
+      <AddProductModal/>
+
+      </div>
+     
     </div>
   )
 }

@@ -1,4 +1,7 @@
 import React from 'react'
+import DeleteIcon from '@mui/icons-material/Delete'
+import IconButton from '@mui/material/IconButton'
+
 
 function SizeInput ({ sizes, onAddSize, onUpdateSize, onRemoveSize }) {
   return (
@@ -14,11 +17,11 @@ function SizeInput ({ sizes, onAddSize, onUpdateSize, onRemoveSize }) {
       </div>
 
       {sizes.map((size, index) => (
-        <div key={index} className='md:flex grid-col-1 gap-2   items-center'>
+        <div key={index} className='md:flex grid-col-1 gap-2 items-center'>
           <select
             value={size}
             onChange={e => onUpdateSize(index, e.target.value)}
-            className='rounded-xl px-3 py-2 border border-gray-300 flex-1'
+            className='rounded-xl py-2 border border-gray-300 flex-1 '
           >
             <option value=''>Select Size</option>
             <option value='xs'>XS</option>
@@ -33,9 +36,9 @@ function SizeInput ({ sizes, onAddSize, onUpdateSize, onRemoveSize }) {
           {sizes.length > 1 && (
             <button
               onClick={() => onRemoveSize(index)}
-              className='bg-red-500 text-white md:px-2 md:py-1 p-1 text-[8px] rounded '
+              className=' text-red md:px-2 md:py-1 p-1 text-[8px] rounded '
             >
-              Remove
+            <DeleteIcon/>
             </button>
           )}
         </div>

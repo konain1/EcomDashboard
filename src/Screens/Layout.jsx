@@ -33,12 +33,14 @@ const componentMap = {
 
 
  const ActiveComponent = componentMap[selectedSidebarItem] || Dashboard
+
   return (
     <div className='text-3xl text-red-400 bg-white w-[100%] relative min-h-screen '>
    
         <div  className="md:hidden absolute  top-1 -translate-x-1/8 bg-gray-800 text-white px-3 text-sm py-1 rounded shadow
          transition-transform duration-300 ease-in-out"
           style={{ transform: toggle ? 'translateX(10%)' : 'translateX(200%)' }}
+
         aria-label="Toggle sidebar">
           <button className='relative' onClick={()=>setToggle(!toggle)}>  {toggle ? <CloseIcon /> : <MenuIcon />}</button>
         </div>
@@ -57,9 +59,12 @@ const componentMap = {
         <Sidebar />
 
       </div>
-      <main>
+      <main className='bg-blue-500 flex justify-center'>
         <Suspense fallback={<div>Loading...</div>}>
+      
+
           <ActiveComponent  toggle={toggle}/>
+       
         </Suspense>
       </main>
     </div>
