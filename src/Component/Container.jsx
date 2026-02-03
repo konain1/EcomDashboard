@@ -5,7 +5,7 @@ import Tabs from '../Screens/Tabs'
 function Container ({ toggle }) {
   return (
     <div>
-      <Tabs toggle={toggle} />
+      {/* <Tabs toggle={toggle} /> */}
       <div>
         <Table />
       </div>

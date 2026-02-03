@@ -6,10 +6,10 @@ import AddProductModal from '../Component/AddProductModal'
 function Orders({toggle}) {
   return (
   
-<div className={`right-[0px] bg-red-600 w-[60%]`+(toggle ? 'left-10 top-[10%]' : 'left-[30%]')}>
-      <span>Orders</span>
+<div className={` relative top-[30%] items-center flex  w-[60%]`+(toggle ? 'left-10 top-[10%]' : 'left-[30%]')}>
+
       <div className=''>
-      <AddProductModal/>
+   
 
       </div>
      

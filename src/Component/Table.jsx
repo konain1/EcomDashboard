@@ -11,23 +11,27 @@ import { useEffect, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { deleteProduct } from '../Redux/DataSlice'
 import EditProductModal from './EditProductModal'
+import AddProductModal from './AddProductModal'
+import AddIcon from '@mui/icons-material/Add'
+import ChecklistIcon from '@mui/icons-material/Checklist';
+import RemoveDoneIcon from '@mui/icons-material/RemoveDone';
 
 const label = { slotProps: { input: { 'aria-label': 'Checkbox demo' } } }
 
-export default function BasicTable() {
+export default function BasicTable () {
   const dispatch = useDispatch()
-  const rows = useSelector(state => state.productData.data) 
+  const rows = useSelector(state => state.productData.data)
   const [checked, setChecked] = useState({})
   const [showEditModal, setShowEditModal] = useState(false)
   const [editData, setEditData] = useState(null)
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false)
 
-
-    
   console.log('Component rendered, rows:', rows)
 
-useEffect(()=>{
-console.log('useEffect')
-},[rows])
+  useEffect(() => {
+    console.log('useEffect')
+  }, [rows])
+
   const handleCheckboxChange = productId => {
     setChecked(prev => ({
       ...prev,
@@ -36,7 +40,9 @@ console.log('useEffect')
   }
 
   const handleDeleteChecked = () => {
-    const idsToDelete = Object.keys(checked).filter(id => checked[id]).map(Number)
+    const idsToDelete = Object.keys(checked)
+      .filter(id => checked[id])
+      .map(Number)
     dispatch(deleteProduct(idsToDelete))
     setChecked({})
   }
@@ -55,8 +61,7 @@ console.log('useEffect')
 
   const handleEdit = () => {
     const selectedRows = rows.filter(row => checked[row.id])
-  
-    
+
     if (selectedRows.length === 1) {
       setEditData(selectedRows[0])
       setShowEditModal(true)
@@ -77,20 +82,47 @@ console.log('useEffect')
     setEditData(null)
     setChecked({})
   }
+  const handleOpenAddModal = () => {
+    setIsAddModalOpen(!isAddModalOpen)
+  }
 
   return (
     <>
       <div style={{ marginBottom: '10px' }}>
-        <Button onClick={selectAll} variant="outlined">Select All</Button>
-        <Button onClick={deselectAll} variant="outlined" style={{ marginLeft: '10px' }}>
-          Deselect All
+        <Button onClick={selectAll} variant='outlined'>
+        <span className='hidden md:inline'> Select All</span>
+        <ChecklistIcon className='md:hidden' />
+        </Button>
+        <Button
+          onClick={deselectAll}
+          variant='outlined'
+          style={{ marginLeft: '10px' }}
+        >
+         <span className='hidden md:inline'> Deselect All</span>
+         <RemoveDoneIcon className='md:hidden' />
+        </Button>
+        <Button
+          onClick={handleOpenAddModal}
+          variant='outlined'
+          className='min-w-fit'
+        >
+          {/* Shown only on wide screens (md and up) */}
+          <span className='hidden md:inline'>Add Product</span>
+
+          {/* Shown only on small screens (hidden on md and up) */}
+          <AddIcon className='md:hidden' />
         </Button>
       </div>
+      {isAddModalOpen && <AddProductModal setIsAddModalOpen={setIsAddModalOpen} />}
 
       {Object.values(checked).some(c => c) && (
         <>
-          <Button onClick={handleDeleteChecked} color="error">Delete Selected</Button>
-          <Button onClick={handleEdit} color="primary">Edit</Button>
+          <Button onClick={handleDeleteChecked} color='error'>
+            Delete Selected
+          </Button>
+          <Button onClick={handleEdit} color='primary'>
+            Edit
+          </Button>
         </>
       )}
 
@@ -130,7 +162,7 @@ console.log('useEffect')
       </TableContainer>
 
       {showEditModal && editData && (
-        <EditProductModal 
+        <EditProductModal
           editData={editData}
           onClose={handleCloseModal}
           onSuccess={handleEditSuccess}
