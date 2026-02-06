@@ -1,19 +1,27 @@
 import React, { useState } from 'react'
 import DeleteIcon from '@mui/icons-material/Delete'
 import IconButton from '@mui/material/IconButton'
+import AddIcon from '@mui/icons-material/Add'
+import RemoveIcon from '@mui/icons-material/Remove'
+import CheckCircleIcon from '@mui/icons-material/CheckCircle'
+import WarningIcon from '@mui/icons-material/Warning'
+import CloudUploadIcon from '@mui/icons-material/CloudUpload'
 
-function AddProductModal({ onClose, onSave,setIsAddModalOpen }) {
-
-
+function AddProductModal({ onClose, onSave, setIsAddModalOpen }) {
 
   const [formData, setFormData] = useState({
     productName: '',
     price: '',
     colors: [''],
-    sizes: ['']
+    sizes: [''],
+    inventory: 1,
+    image: null
   })
 
-
+  const [imagePreview, setImagePreview] = useState(null)
+  const [showNotification, setShowNotification] = useState(false)
+  const [showWarning, setShowWarning] = useState(false)
+  const [warningMessage, setWarningMessage] = useState('')
 
   const handleInputChange = e => {
     const { name, value } = e.target
@@ -23,8 +31,74 @@ function AddProductModal({ onClose, onSave,setIsAddModalOpen }) {
     }))
   }
 
+  // Image upload handler
+  const handleImageChange = (e) => {
+    const file = e.target.files[0]
+    if (file) {
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        setWarningMessage('Please upload a valid image file!')
+        setShowWarning(true)
+        setTimeout(() => setShowWarning(false), 3000)
+        return
+      }
+
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        setWarningMessage('Image size must be less than 5MB!')
+        setShowWarning(true)
+        setTimeout(() => setShowWarning(false), 3000)
+        return
+      }
+
+      setFormData(prev => ({
+        ...prev,
+        image: file
+      }))
+
+      // Create preview
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        setImagePreview(reader.result)
+      }
+      reader.readAsDataURL(file)
+    }
+  }
+
+  // Remove image handler
+  const handleRemoveImage = () => {
+    setFormData(prev => ({
+      ...prev,
+      image: null
+    }))
+    setImagePreview(null)
+  }
+
+  // Inventory handler functions
+  const handleInventoryChange = (e) => {
+    const value = parseInt(e.target.value) || 1
+    setFormData(prev => ({
+      ...prev,
+      inventory: Math.max(1, value)
+    }))
+  }
+
+  const incrementInventory = () => {
+    setFormData(prev => ({
+      ...prev,
+      inventory: prev.inventory + 1
+    }))
+  }
+
+  const decrementInventory = () => {
+    setFormData(prev => ({
+      ...prev,
+      inventory: Math.max(1, prev.inventory - 1)
+    }))
+  }
+
   const handleColorChange = (index, value) => {
-    const newColors = [...formData.colors]
+    const newColors = [...formData.colors] 
     newColors[index] = value
     setFormData(prev => ({ ...prev, colors: newColors }))
   }
@@ -64,12 +138,108 @@ function AddProductModal({ onClose, onSave,setIsAddModalOpen }) {
     setFormData(prev => ({ ...prev, sizes: newSizes }))
   }
 
-  const handleSubmit = e => {
-    e.preventDefault()
-    onSave && onSave(formData)
+  // Validation function
+  const validateForm = () => {
+    // Check product name
+    if (!formData.productName.trim()) {
+      setWarningMessage('Please enter a product name!')
+      setShowWarning(true)
+      setTimeout(() => setShowWarning(false), 3000)
+      return false
+    }
+
+    // Check price
+    if (!formData.price || parseFloat(formData.price) <= 0) {
+      setWarningMessage('Please enter a valid price!')
+      setShowWarning(true)
+      setTimeout(() => setShowWarning(false), 3000)
+      return false
+    }
+
+    // Check inventory - must be at least 1
+    if (!formData.inventory || formData.inventory < 1) {
+      setWarningMessage('Inventory must be at least 1!')
+      setShowWarning(true)
+      setTimeout(() => setShowWarning(false), 3000)
+      return false
+    }
+
+    // Check image
+    if (!formData.image) {
+      setWarningMessage('Please upload a product image!')
+      setShowWarning(true)
+      setTimeout(() => setShowWarning(false), 3000)
+      return false
+    }
+
+    // Check colors - at least one color must be filled
+    const hasValidColor = formData.colors.some(color => color.trim() !== '')
+    if (!hasValidColor) {
+      setWarningMessage('Please select at least one color!')
+      setShowWarning(true)
+      setTimeout(() => setShowWarning(false), 3000)
+      return false
+    }
+
+    // Check if all color fields are filled (no empty color fields)
+    const hasEmptyColor = formData.colors.some(color => color.trim() === '')
+    if (hasEmptyColor) {
+      setWarningMessage('Please fill all color fields or remove empty ones!')
+      setShowWarning(true)
+      setTimeout(() => setShowWarning(false), 3000)
+      return false
+    }
+
+    // Check sizes - at least one size must be selected
+    const hasValidSize = formData.sizes.some(size => size.trim() !== '')
+    if (!hasValidSize) {
+      setWarningMessage('Please select at least one size!')
+      setShowWarning(true)
+      setTimeout(() => setShowWarning(false), 3000)
+      return false
+    }
+
+    // Check if all size fields are filled (no empty size fields)
+    const hasEmptySize = formData.sizes.some(size => size.trim() === '')
+    if (hasEmptySize) {
+      setWarningMessage('Please fill all size fields or remove empty ones!')
+      setShowWarning(true)
+      setTimeout(() => setShowWarning(false), 3000)
+      return false
+    }
+
+    return true
   }
 
-  const handleCloseModal = ()=>{
+  const handleSubmit = e => {
+    e.preventDefault()
+    
+    // Auto-set inventory to 1 if it's 0 or empty
+    if (!formData.inventory || formData.inventory < 1) {
+      setFormData(prev => ({ ...prev, inventory: 1 }))
+    }
+    
+    // Validate form before saving
+    if (!validateForm()) {
+      return
+    }
+
+    // Save the data
+    onSave && onSave(formData)
+    
+    // Show success notification
+    setShowNotification(true)
+    
+    // Hide notification and close modal after 2 seconds
+    setTimeout(() => {
+      setShowNotification(false)
+      setIsAddModalOpen(false)
+    }, 2000)
+
+    console.log(formData)
+  }
+
+  const handleCloseModal = () => {
     setIsAddModalOpen(false)
   }
 
@@ -78,9 +248,25 @@ function AddProductModal({ onClose, onSave,setIsAddModalOpen }) {
 
   return (
     <div className='flex items-center justify-center p-4 '>
-      <div className='bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[95vh] overflow-y-auto'>
+      <div className='bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[95vh] overflow-y-auto relative'>
         
-        {/* Header - Added for better UX */}
+        {/* Success Notification Popup */}
+        {showNotification && (
+          <div className='absolute top-4 left-1/2 -translate-x-1/2 z-50 bg-green-500 text-white px-6 py-3 rounded-xl shadow-2xl flex items-center gap-3 animate-bounce'>
+            <CheckCircleIcon />
+            <span className='font-bold'>Product saved successfully!</span>
+          </div>
+        )}
+
+        {/* Warning Notification Popup */}
+        {showWarning && (
+          <div className='absolute top-4 left-1/2 -translate-x-1/2 z-50 bg-red-500 text-white px-6 py-3 rounded-xl shadow-2xl flex items-center gap-3 animate-shake'>
+            <WarningIcon />
+            <span className='font-bold'>{warningMessage}</span>
+          </div>
+        )}
+
+        {/* Header */}
         <div className="px-6 py-4 border-b flex justify-between items-center bg-gray-50 rounded-t-2xl">
           <h2 className="text-xl font-bold text-gray-800">Add Product</h2>
           <button onClick={handleCloseModal} className="text-gray-500 hover:text-red-500 transition-colors text-2xl">&times;</button>
@@ -100,7 +286,6 @@ function AddProductModal({ onClose, onSave,setIsAddModalOpen }) {
               onChange={handleInputChange}
               placeholder='Enter product name'
               className='w-full text-sm px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none transition-all'
-              required
             />
           </div>
 
@@ -122,14 +307,84 @@ function AddProductModal({ onClose, onSave,setIsAddModalOpen }) {
                 step='.5'
                 min='0'
                 className='w-full pl-8 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none transition-all'
-                required
               />
+            </div>
+          </div>
+
+          {/* Inventory */}
+          <div className='flex flex-col'>
+            <label className='block text-sm font-bold text-gray-700 mb-2'>
+              Inventory <span className='text-red-500'>*</span> <span className='text-xs text-gray-500'>(Min: 1)</span>
+            </label>
+            <div className='relative flex items-center'>
+              <button
+                type='button'
+                onClick={decrementInventory}
+                disabled={formData.inventory === 1}
+                className='absolute left-2 z-10 w-8 h-8 flex items-center justify-center rounded-lg bg-gray-100 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-all'
+              >
+                <RemoveIcon fontSize='small' />
+              </button>
+              <input
+                type='number'
+                name='inventory'
+                value={formData.inventory}
+                onChange={handleInventoryChange}
+                placeholder='1'
+                step='1'
+                min='1'
+                className='w-full text-center px-12 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none transition-all'
+              />
+              <button
+                type='button'
+                onClick={incrementInventory}
+                className='absolute right-2 z-10 w-8 h-8 flex items-center justify-center rounded-lg bg-gray-100 hover:bg-gray-200 transition-all'
+              >
+                <AddIcon fontSize='small' />
+              </button>
+            </div>
+          </div>
+
+          {/* Product Image Upload */}
+          <div className='flex flex-col'>
+            <label className='block text-sm font-bold text-gray-700 mb-2'>
+              Product Image <span className='text-red-500'>*</span> <span className='text-xs text-gray-500'>(Max: 5MB)</span>
+            </label>
+            <div className='relative'>
+              {!imagePreview ? (
+                <label className='w-full h-[120px] flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition-all'>
+                  <CloudUploadIcon className='text-gray-400 mb-2' fontSize='large' />
+                  <span className='text-sm text-gray-500 font-medium'>Click to upload image</span>
+                  <span className='text-xs text-gray-400 mt-1'>PNG, JPG, JPEG (Max 5MB)</span>
+                  <input
+                    type='file'
+                    accept='image/*'
+                    onChange={handleImageChange}
+                    className='hidden'
+                  />
+                </label>
+              ) : (
+                <div className='relative w-full h-[120px] border-2 border-gray-200 rounded-xl overflow-hidden'>
+                  <img
+                    src={imagePreview}
+                    alt='Product preview'
+                    className='w-full h-full object-cover'
+                  />
+                  <button
+                    type='button'
+                    onClick={handleRemoveImage}
+                    className='absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-all shadow-lg'
+                  >
+                    <DeleteIcon fontSize='small' />
+                  </button>
+                </div>
+              )}
             </div>
           </div>
 
           {/* Colors Section */}
           <div className='bg-blue-50/50 border border-blue-100 p-5 rounded-2xl'>
-            <label className='block text-sm font-bold text-blue-900 mb-4'>Colors</label>
+            <label className='block text-sm font-bold text-blue-900 mb-4'>Colors <span className='text-red-500'>*</span></label>
             <div className='space-y-3'>
               {formData.colors.map((color, index) => (
                 <div key={index} className='flex gap-3 items-center'>
@@ -173,7 +428,7 @@ function AddProductModal({ onClose, onSave,setIsAddModalOpen }) {
 
           {/* Sizes Section */}
           <div className='bg-purple-50/50 border border-purple-100 p-5 rounded-2xl'>
-            <label className='block text-sm font-bold text-purple-900 mb-4'>Sizes</label>
+            <label className='block text-sm font-bold text-purple-900 mb-4'>Sizes <span className='text-red-500'>*</span></label>
             <div className='space-y-3'>
               {formData.sizes.map((size, index) => (
                 <div key={index} className='flex gap-3 items-center'>
@@ -226,7 +481,7 @@ function AddProductModal({ onClose, onSave,setIsAddModalOpen }) {
             <button
               type='button'
               onClick={handleCloseModal}
-              className='flex-1 bg-gray-100 text-gray-600 font-bold md:py-4 py-2 rounded-xl text-[12px] md:text-lg hover:bg-red-400 hover:text-white  hover:shadow-lg transform hover:-translate-y-0.5 transition-all active:scale-95'
+              className='flex-1 bg-gray-100 text-gray-600 font-bold md:py-4 py-2 rounded-xl text-[12px] md:text-lg hover:bg-red-400 hover:text-white hover:shadow-lg transform hover:-translate-y-0.5 transition-all active:scale-95'
             >
               Cancel
             </button>
