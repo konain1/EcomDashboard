@@ -9,7 +9,7 @@ import { Button, Chip } from '@mui/material'
 import Checkbox from '@mui/material/Checkbox'
 import { useEffect, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { deleteProduct } from '../Redux/DataSlice'
+import { addProduct, deleteProduct } from '../Redux/DataSlice'
 import EditProductModal from './EditProductModal'
 import AddProductModal from './AddProductModal'
 import AddIcon from '@mui/icons-material/Add'
@@ -97,6 +97,7 @@ export default function BasicTable() {
 
   const handleAddProductSuccess = (newProduct) => {
     console.log('Product added:', newProduct)
+    dispatch(addProduct(newProduct))
     setIsAddModalOpen(false)
   }
 

@@ -73,18 +73,18 @@ const productSlice = createSlice({
       // Generate new ID
       const newId = state.data.length > 0 
         ? Math.max(...state.data.map(p => p.id)) + 1 
-        : 1
-      
+        : 1;
+
       state.data.push({
         id: newId,
         Products: action.payload.productName,
         price: parseFloat(action.payload.price),
         Inventory: parseInt(action.payload.inventory),
         Sold: 0, // New products have 0 sold
-        Image: action.payload.image || "Yes",
+        Image: action.payload.image ? URL.createObjectURL(action.payload.image) : "No", // Set to "No" if no image is uploaded
         colors: action.payload.colors,
         sizes: action.payload.sizes
-      })
+      });
     },
     
     deleteProduct: (state, action) => {

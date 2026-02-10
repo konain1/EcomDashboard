@@ -225,7 +225,13 @@ function AddProductModal({ onClose, onSave, setIsAddModalOpen }) {
     }
 
     // Save the data
-    onSave && onSave(formData)
+    const generateRandomId = () => {
+      return Math.random().toString(36).substr(2, 9); // Generate a random alphanumeric string
+    };
+    const productId = `prod-${generateRandomId()}`; // Generate a unique product ID
+    const productWithId = { ...formData, id: productId };
+    console.log('saved', productWithId);
+    onSave && onSave(productWithId); // Pass the product with ID to the onSave callback
     
     // Show success notification
     setShowNotification(true)
@@ -236,7 +242,17 @@ function AddProductModal({ onClose, onSave, setIsAddModalOpen }) {
       setIsAddModalOpen(false)
     }, 2000)
 
-    console.log(formData)
+   
+  }
+
+  const handleSave = () => {
+    const generateRandomId = () => {
+      return Math.random().toString(36).substr(2, 9); // Generate a random alphanumeric string
+    };
+    const productId = `prod-${generateRandomId()}`; // Generate a unique product ID
+    const productWithId = { ...formData, id: productId };
+    console.log('saved', productWithId);
+    onSave && onSave(productWithId); // Pass the product with ID to the onSave callback
   }
 
   const handleCloseModal = () => {
@@ -472,7 +488,7 @@ function AddProductModal({ onClose, onSave, setIsAddModalOpen }) {
 
           {/* Action Buttons */}
           <div className='md:col-span-2 flex flex-col sm:flex-row gap-4 pt-4'>
-            <button
+            <button onClick={handleSave}
               type='submit'
               className='flex-1 bg-gradient-to-r from-green-500 to-green-600 text-white font-bold md:py-4 py-2 text-[12px] md:text-lg rounded-xl hover:shadow-lg transform hover:-translate-y-0.5 transition-all active:scale-95'
             >
