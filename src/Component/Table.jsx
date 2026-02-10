@@ -42,16 +42,23 @@ export default function BasicTable() {
   const handleDeleteChecked = () => {
     const idsToDelete = Object.keys(checked)
       .filter(id => checked[id])
-      .map(Number)
-    
+      .map(Number);
+
     if (idsToDelete.length === 0) {
-      alert('Please select at least one product to delete')
-      return
+      alert('Please select at least one product to delete');
+      return;
     }
 
-    if (window.confirm(`Are you sure you want to delete ${idsToDelete.length} product(s)?`)) {
-      dispatch(deleteProduct(idsToDelete))
-      setChecked({})
+    // Show confirmation dialog
+    const confirmDelete = window.confirm(
+      `Are you sure you want to delete ${idsToDelete.length} product(s)? This action cannot be undone.`
+    );
+
+    if (confirmDelete) {
+      dispatch(deleteProduct(idsToDelete));
+      setChecked({});
+    } else {
+      console.log('Delete action canceled by the user.');
     }
   }
 
@@ -96,7 +103,7 @@ export default function BasicTable() {
   }
 
   const handleAddProductSuccess = (newProduct) => {
-    console.log('Product added:', newProduct)
+  
     dispatch(addProduct(newProduct))
     setIsAddModalOpen(false)
   }
